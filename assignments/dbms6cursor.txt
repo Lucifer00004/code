@@ -1,0 +1,54 @@
+CREATE TABLE o_rollcall(
+roll_no NUMBER,
+name VARCHAR2(30),
+marks NUMBER
+);
+
+CREATE TABLE n_rollcall(
+roll_no NUMBER,
+name VARCHAR2(30),
+marks NUMBER
+);
+INSERT INTO o_rollcall VALUES(1,'meera',89);
+INSERT INTO o_rollcall VALUES(2,'sameer',95);
+INSERT INTO o_rollcall VALUES(3,'shreya',90);
+
+INSERT INTO n_rollcall VALUES(4,'riya',96);
+INSERT INTO n_rollcall VALUES(5,'priya',70);
+INSERT INTO n_rollcall VALUES(3,'jay',85);
+
+SELECT *FROM o_rollcall;
+SELECT *FROM n_rollcall;
+
+DECLARE 
+CURSOR cur_new(rno NUMBER)IS
+SELECT roll_no,name,marks
+FROM n_rollcall
+WHERE roll_no=rno;
+
+v_roll_no NUMBER;
+v_name VARCHAR2(30);
+v_marks NUMBER;
+v_count NUMBER;
+
+BEGIN 
+FOR rec IN (SELECT roll_no FROM n_rollcall) LOOP
+OPEN cur_new(rec.roll_no);
+FETCH cur_new INTO v_roll_no,v_name,v_marks;
+
+IF cur_new%FOUND THEN
+SELECT COUNT(*) INTO v_count
+FROM o_rollcall
+WHERE roll_no=v_roll_no;
+
+IF v_count=0 THEN
+
+INSERT INTO o_rollcall VALUES(v_roll_no,v_name,v_marks);
+END IF;
+END IF;
+CLOSE cur_new;
+END LOOP;
+END;
+/
+
+SELECT *FROM o_rollcall;

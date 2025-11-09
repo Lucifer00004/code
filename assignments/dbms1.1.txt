@@ -1,0 +1,62 @@
+DROP TABLE world_cricket PURGE;
+
+CREATE TABLE world_cricket(
+  jersey_no NUMBER PRIMARY KEY,
+  name VARCHAR2(50) NOT NULL,
+  player_desc VARCHAR2(50),
+  country VARCHAR2(10),
+  ipl_team VARCHAR2(10)
+);
+
+INSERT INTO world_cricket VALUES(7,'DHONI','WK','INDIA','CSK');
+INSERT INTO world_cricket VALUES(2,'RAINA','BATSMAN','INDIA','CSK');
+INSERT INTO world_cricket VALUES(8,'JADEJA','BOWLER','INDIA','CSK');
+INSERT INTO world_cricket VALUES(18,'KOLHI','BATSMA','INDIA','RCB');
+INSERT INTO world_cricket VALUES(45,'SHARAM','OPNER','INDIA','MI');
+
+SELECT * FROM world_cricket;
+
+DROP TABLE player_salary PURGE;
+
+CREATE TABLE player_salary(
+  name VARCHAR2(50) PRIMARY KEY,
+  ipl_team VARCHAR(10) NOT NULL,
+  salary_cr NUMBER(6,2) NOT NULL
+);
+INSERT INTO player_salary VALUES('DHONI','CSK',16);
+INSERT INTO player_salary VALUES('KOLHI','RCB',11);
+INSERT INTO player_salary VALUES('SHARAM','MI',13);
+
+SELECT * FROM player_salary;
+
+SELECT w.name,w.ipl_team,s.salary_cr
+FROM world_cricket w
+INNER JOIN player_salary s
+  ON w.name=s.name
+
+SELECT w.name,w.ipl_team,s.salary_cr
+FROM world_cricket w
+LEFT JOIN player_salary s
+  ON w.name=s.name
+
+SELECT w.name,w.ipl_team,s.salary_cr
+FROM world_cricket w
+RIGHT JOIN player_salary s
+  ON w.name=s.name
+
+SELECT w.name,w.ipl_team,s.salary_cr
+FROM world_cricket w
+FULL OUTER JOIN player_salary s
+  ON w.name=s.name
+
+SELECT w.name,s.salary_cr
+FROM world_cricket w
+CROSS JOIN player_salary s
+
+SELECT name
+FROM world_cricket 
+WHERE ipl_team IN (SELECT ipl_Team FROM player_salary WHERE ipl_team='CSK');
+
+SELECT name, ipl_team
+FROM player_salary
+WHERE salary_cr>(SELECT AVG(salary_cr) FROM player_salary);

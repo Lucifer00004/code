@@ -1,0 +1,68 @@
+CREATE TABLE Borrower (
+    Roll_no NUMBER PRIMARY KEY,
+    Name VARCHAR2(50),
+    DateOfIssue DATE,
+    NameOfBook VARCHAR2(50),
+    Status CHAR(1)
+);
+drop table borrower;
+
+CREATE TABLE Fine (
+    Roll_no NUMBER,
+    Date_Fined DATE,
+    Amt NUMBER
+);
+drop table Fine;
+INSERT INTO Borrower VALUES (1, 'Snehal', DATE '2025-10-01', 'DBMS', 'I');
+INSERT INTO Borrower VALUES (2, 'Amit', DATE '2025-10-20', 'OS', 'I');
+DECLARE
+    v_roll Borrower.Roll_no%TYPE := 1;         
+    v_book Borrower.NameOfBook%TYPE := 'DBMS';  
+    v_date_issue DATE;
+    v_days NUMBER;
+    v_fine NUMBER := 0;
+
+    e_no_borrower EXCEPTION;
+
+BEGIN
+    SELECT DateOfIssue INTO v_date_issue
+    FROM Borrower
+    WHERE Roll_no = v_roll AND NameOfBook = v_book AND Status = 'I';
+
+    v_days := TRUNC(SYSDATE - v_date_issue);
+
+    IF v_days > 30 THEN
+        v_fine := (v_days - 30) * 50 + (30 - 15) * 5;
+    ELSIF v_days BETWEEN 15 AND 30 THEN
+        v_fine := (v_days - 14) * 5;
+    ELSE
+        v_fine := 0;
+    END IF;
+
+    UPDATE Borrower
+    SET Status = 'R'
+    WHERE Roll_no = v_roll AND NameOfBook = v_book;
+
+    IF v_fine > 0 THEN
+        INSERT INTO Fine VALUES (v_roll, SYSDATE, v_fine);
+    END IF;
+
+    DBMS_OUTPUT.PUT_LINE('Book returned successfully.');
+    DBMS_OUTPUT.PUT_LINE('Days: ' || v_days || ' | Fine: Rs. ' || v_fine);
+
+EXCEPTION
+    WHEN NO_DATA_FOUND THEN
+        DBMS_OUTPUT.PUT_LINE('No record found for given Roll No or Book Name.');
+    WHEN e_no_borrower THEN
+        DBMS_OUTPUT.PUT_LINE('Borrower not found or already returned.');
+    WHEN OTHERS THEN
+        DBMS_OUTPUT.PUT_LINE('Unexpected Error: ' || SQLERRM);
+END;
+/
+
+
+
+SELECT * FROM Borrower;
+SELECT * FROM Fine;
+
+

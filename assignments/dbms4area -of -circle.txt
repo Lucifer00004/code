@@ -1,0 +1,31 @@
+BEGIN
+   EXECUTE IMMEDIATE 'DROP TABLE areas';
+EXCEPTION
+   WHEN OTHERS THEN
+      NULL;
+END;
+/
+
+CREATE TABLE areas (
+   redius NUMBER,
+   area_val NUMBER
+);
+
+DECLARE
+   rad NUMBER;
+   a   NUMBER;
+BEGIN
+   FOR rad IN 5..9 LOOP
+      a := 3.14 * POWER(rad, 2);
+      INSERT INTO areas (redius, area_val)
+      VALUES (rad, a);
+   END LOOP;
+
+   DBMS_OUTPUT.PUT_LINE('redius | area_val');
+   DBMS_OUTPUT.PUT_LINE('-------------------');
+
+   FOR rec IN (SELECT redius, area_val FROM areas) LOOP
+      DBMS_OUTPUT.PUT_LINE(rec.redius || ' | ' || rec.area_val);
+   END LOOP;
+END;
+/

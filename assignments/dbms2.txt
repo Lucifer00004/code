@@ -1,0 +1,109 @@
+CREATE TABLE students (
+rno NUMBER PRIMARY KEY,
+name1 VARCHAR2(30) NOT NULL,
+branch VARCHAR2(30),
+marks NUMBER CHECK(marks>=0 AND marks<=100)
+);
+
+DROP TABLE students;
+
+CREATE TABLE course(
+course_id NUMBER PRIMARY KEY,
+course_name VARCHAR2(30),
+rno NUMBER,
+branch VARCHAR2(30),
+FOREIGN KEY(rno) references students(rno)
+);
+DROP TABLE course;
+
+INSERT INTO students(rno,name1,branch,marks)
+VALUES(1,'snehal','comp',90);
+INSERT INTO students(rno,name1,branch,marks)
+VALUES(2,'maya','it',80);
+INSERT INTO students(rno,name1,branch,marks)
+VALUES(3,'meera','comp',79);
+INSERT INTO students(rno,name1,branch,marks)
+VALUES(4,'riya','mech',80);
+INSERT INTO students(rno,name1,branch,marks)
+VALUES(5,'preeya','comp',97);
+INSERT INTO students(rno,name1,branch,marks)
+VALUES(6,'ram','it',85);
+
+INSERT INTO course(course_id,course_name,rno,branch)
+VALUES(101,'dbms',2,'comp');
+INSERT INTO course(course_id,course_name,rno,branch)
+VALUES(102,'spos',4,'it');
+INSERT INTO course(course_id,course_name,rno,branch)
+VALUES(103,'hci',5,'comp');
+INSERT INTO course(course_id,course_name,rno,branch)
+VALUES(104,'m1',1,'mech');
+INSERT INTO course(course_id,course_name,rno,branch)
+VALUES(105,'toc',3,'comp');
+INSERT INTO course(course_id,course_name,rno,branch)
+VALUES(107,'m3',1,'comp');
+
+SELECT *FROM students;
+SELECT * FROM course;
+
+SELECT s.rno,s.name1,s.branch,c.course_name
+FROM students s
+INNER JOIN course c ON s.rno=c.rno;
+
+SELECT s.rno, s.name1, c.course_id
+FROM students s
+LEFT JOIN course c ON s.rno = c.rno
+ORDER BY s.rno;
+
+SELECT s.rno ,s.name1,c.course_name
+FROM students s
+RIGHT JOIN course c ON s.rno=c.rno;
+
+SELECT s.rno,s.name1,c.course_name
+FROM students s
+FULL OUTER JOIN course c ON s.rno =c.rno;
+
+SELECT s1.name1 AS student1 ,s2.name1 AS student2 ,s1.marks
+FROM students s1
+JOIN students s2 ON s1.rno=s2.rno;
+
+SELECT s.rno,s.name1
+FROM students s
+CROSS JOIN course c;
+
+SELECT name1,marks,branch
+FROM students 
+WHERE marks>=(SELECT AVG(marks) FROM students);
+
+SELECT name1 ,branch,rno
+FROM students 
+WHERE rno IN (SELECT rno FROM course WHERE course_name='dbms');
+
+SELECT name1,rno,branch,marks
+FROM students  s1
+WHERE marks>(SELECT AVG(marks)
+FROM students s2
+WHERE s2.branch=s1.branch);
+
+SELECT s.name1,s.marks,c.branch
+FROM students s
+JOIN course c ON s.rno=c.rno
+WHERE c.branch='comp';
+
+CREATE VIEW top_3_students AS
+SELECT name1,marks,branch
+FROM students 
+WHERE marks>=80
+ORDER BY marks DESC;
+
+SELECT *FROM top_3_students;
+
+DROP VIEW top_3_students;
+
+
+
+
+
+
+
+
+

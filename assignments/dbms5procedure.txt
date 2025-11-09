@@ -1,0 +1,59 @@
+CREATE TABLE Stud_Marks (
+    Name VARCHAR2(30),
+    Total_Marks NUMBER
+);
+
+CREATE TABLE Result (
+    Roll NUMBER,
+    Name VARCHAR2(30),
+    Class VARCHAR2(30)
+);
+CREATE OR REPLACE FUNCTION fn_GetGrade (marks NUMBER)
+RETURN VARCHAR2
+AS
+    v_grade VARCHAR2(30);
+BEGIN
+    IF marks BETWEEN 990 AND 1500 THEN
+        v_grade := 'DISTINCTION';
+    ELSIF marks BETWEEN 900 AND 989 THEN
+        v_grade := 'FIRST CLASS';
+    ELSIF marks BETWEEN 825 AND 899 THEN
+        v_grade := 'HIGHER SECOND CLASS';
+    ELSE
+        v_grade := 'FAIL';
+    END IF;
+
+    RETURN v_grade;
+END fn_GetGrade;
+/
+
+CREATE OR REPLACE PROCEDURE proc_Grade (
+    roll_no IN NUMBER,
+    stud_name IN VARCHAR2,
+    marks IN NUMBER
+)
+AS
+    v_category VARCHAR2(30);
+BEGIN
+    -- Call stored function to get grade
+    v_category := fn_GetGrade(marks);
+
+    -- Display the result
+    DBMS_OUTPUT.PUT_LINE(roll_no || ' - ' || stud_name || ' : ' || v_category);
+
+    -- Insert into both tables
+    INSERT INTO Stud_Marks VALUES (stud_name, marks);
+    INSERT INTO Result VALUES (roll_no, stud_name, v_category);
+
+EXCEPTION
+    WHEN OTHERS THEN
+        DBMS_OUTPUT.PUT_LINE('Error occurred: ' || SQLERRM);
+END proc_Grade;
+/
+BEGIN
+    proc_Grade(1, 'Snehal', 1000);
+    proc_Grade(2, 'Meera', 950);
+    proc_Grade(3, 'Maya', 880);
+    proc_Grade(4, 'Riya', 700);
+END;
+/
